@@ -203,12 +203,9 @@ if __name__ == '__main__':
                 'pct_listings_price_cut_raw',
                 'pct_sold_above_list_price_raw',
                 'pct_sold_below_list_price_raw']
+    ds_begin = datetime(2020, 7, 1)
+    ds_end = datetime(2023, 5, 1)
     for feature in features:
-        data = get_feature(feature, datetime(2023, 6, 1))
-        ds_begin = data['date'].min() + \
-                   relativedelta(days=1) + \
-                   relativedelta(months=16)
-        ds_end = datetime(2023, 6, 1)
         # Predictions when removing the seasonality
         MSE = np.zeros(6)
         RMSE = np.zeros(6)
@@ -216,6 +213,7 @@ if __name__ == '__main__':
         MAPE = np.zeros(6)
         R2 = np.zeros(6)
         for lag in range(1, 7):
+            print('SA', feature, lag)
             (y, y_hat) = backtest(feature, lag, ds_begin, ds_end, True)
             MSE[lag - 1] = mean_squared_error(y, y_hat)
             RMSE[lag - 1] = sqrt(mean_squared_error(y, y_hat))
@@ -232,6 +230,7 @@ if __name__ == '__main__':
         MAPE = np.zeros(6)
         R2 = np.zeros(6)
         for lag in range(1, 7):
+            print('NSA', feature, lag)
             (y, y_hat) = backtest(feature, lag, ds_begin, ds_end, False)
             MSE[lag - 1] = mean_squared_error(y, y_hat)
             RMSE[lag - 1] = sqrt(mean_squared_error(y, y_hat))
