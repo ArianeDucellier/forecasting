@@ -19,9 +19,11 @@ def get_national_data(filename, varname, growth=False):
     return df
 
 def merge_data():
-    zhvi = get_national_data('Metro_zhvi_uc_sfrcondo_tier_0.33_0.67_month.csv', 'zhvi', True)
-    sales = get_national_data('Metro_sales_count_now_uc_sfrcondo_month.csv', 'sales', False)
-    invt = get_national_data('Metro_invt_fs_uc_sfrcondo_month.csv', 'invt', False)
-    df = reduce(lambda x, y: x.merge(y, on='date'), [zhvi, sales, invt])
-    df['ratio'] = df['sales'] / df['invt']
+    zhvi = get_national_data('home_prices_raw.csv', 'zhvi', True)
+    pct_listings_price_cut = get_national_data('pct_listings_price_cut_raw.csv', 'pct_listings_price_cut', True)
+    df = reduce(lambda x, y: x.merge(y, on='date'), [zhvi, pct_listings_price_cut])
+#    sales = get_national_data('Metro_sales_count_now_uc_sfrcondo_month.csv', 'sales', False)
+#    invt = get_national_data('Metro_invt_fs_uc_sfrcondo_month.csv', 'invt', False)
+#    df = reduce(lambda x, y: x.merge(y, on='date'), [zhvi, sales, invt])
+#    df['ratio'] = df['sales'] / df['invt']
     return df

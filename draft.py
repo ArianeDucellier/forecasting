@@ -11,9 +11,9 @@ from get_national_data import merge_data
 torch.manual_seed(101)
 
 batch_size = 4
-sequence_length = 5
+sequence_length = 24
 learning_rate = 5e-4
-num_hidden_units = 16
+num_hidden_units = 12
 n_epochs = 100
 
 #df = pre_process_data()
@@ -24,7 +24,7 @@ df = merge_data()
 #target = 'United States'
 target = 'zhvi'
 #features = list(df.columns.difference([target]))
-features = ['ratio']
+features = ['pct_listings_price_cut']
 
 df = df[[target] + features]
 df = df.dropna()
@@ -34,15 +34,15 @@ test_start = '2021-10-10'
 df_train = df.loc[:test_start].copy()
 df_test = df.loc[test_start:].copy()
 
-#target_mean = df_train[target].mean()
-#target_stdev = df_train[target].std()
+target_mean = df_train[target].mean()
+target_stdev = df_train[target].std()
 
-#for c in df_train.columns:
-#    mean = df_train[c].mean()
-#    stdev = df_train[c].std()
+for c in df_train.columns:
+    mean = df_train[c].mean()
+    stdev = df_train[c].std()
 
-#    df_train[c] = (df_train[c] - mean) / stdev
-#    df_test[c] = (df_test[c] - mean) / stdev
+    df_train[c] = (df_train[c] - mean) / stdev
+    df_test[c] = (df_test[c] - mean) / stdev
 
 class SequenceDataset(Dataset):
     def __init__(self, dataframe, target, features, sequence_length=5):
@@ -88,7 +88,7 @@ class ShallowRegressionLSTM(nn.Module):
         super().__init__()
         self.num_sensors = num_sensors  # this is the number of features
         self.hidden_units = hidden_units
-        self.num_layers = 1
+        self.num_layers = 2
 
         self.lstm = nn.LSTM(
             input_size=num_sensors,
@@ -181,7 +181,7 @@ df_test[ystar_col] = predict(test_loader, model).numpy()
 
 df_out = pd.concat((df_train, df_test))[[target, ystar_col]]
 
-#for c in df_out.columns:
-#    df_out[c] = df_out[c] * target_stdev + target_mean
+for c in df_out.columns:
+    df_out[c] = df_out[c] * target_stdev + target_mean
 
 df_out.to_csv('predictions.csv')
