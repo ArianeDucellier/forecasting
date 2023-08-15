@@ -12,20 +12,21 @@ from sklearn.preprocessing import StandardScaler
 
 from linear_regression import get_target, get_feature
 
-def get_features(features, ds, sa):
+def get_features(features, ds, n_months, sa):
     """
-    Function to read the features time series
+    Function to read the features time series.
     Input:
-        features: list of tuples (name of the feature, lag)
-        ds: datetime, we only keep data anterior to ds
-        sa: if True, remove seasonal component
+        features: list of tuples (name of the feature, lag).
+        ds: datetime. We only keep data anterior to ds.
+        n_months: integer. Number of months to keep in the dataset.
+        sa: boolean. If True, remove seasonal component.
     Output:
-        df: 2D numpy array
+        df: panda dataframe.
     """
     for count, feature in enumerate(features):
         name = feature[0]
         lag = feature[1]
-        feature_data = get_feature(name, ds, sa)
+        feature_data = get_feature(name, ds, n_months, sa)
         feature_data[name] = feature_data[name].shift(lag)
         if count == 0:
             df = feature_data
@@ -34,31 +35,35 @@ def get_features(features, ds, sa):
         df = df.dropna()
     return df
 
-def get_train_data(features, ds, sa):
+def get_train_data(features, ds, n_months, sa):
     """
     Function to get the training set. We get the target and features
     and apply a lag to the features for the forecasting.
     Input:
-        features: list of tuples (name of the feature, lag)
-        ds: datetime, we only keep data anterior to ds
-        sa: if True, remove seasonal component
+        features: list of tuples (name of the feature, lag).
+        ds: datetime. We only keep data anterior to ds.
+        n_months: integer. Number of months to keep in the dataset.
+        sa: boolean. If True, remove seasonal component.
     """
-    target = get_target(ds, sa)
-    df = get_features(features, ds, sa)
+    target = get_target(ds, n_months, sa)
+    df = get_features(features, ds, n_months, sa)
     df = pd.merge(target, df, on=['date'], how='inner')
     df = df.dropna()
     return df
 
-def train_model(features, n_estimators, max_samples, ds, sa=False):
+def train_model(features, n_estimators, max_samples, ds, n_months, sa=False):
     """
     Function to train the model
     Input:
-        name: string, name of the feature
-        lag: integer, lag (in months) to apply to the feature
-        ds: datetime, we only keep data anterior to ds
-        sa: if True, remove seasonal component
+        name: string. Name of the feature.
+        lag: integer. Lag (in months) to apply to the feature.
+        ds: datetime. We only keep data anterior to ds.
+        n_months: integer. Number of months to keep in the dataset.
+        sa: boolean. If True, remove seasonal component.
+    Output:
+        (model, scaler)
     """
-    data = get_train_data(features, ds, False)
+    data = get_train_data(features, ds, n_months, False)
     X = data.drop(columns=['date', 'target']).to_numpy()
     scaler = StandardScaler().fit(X)
     X_scaled = scaler.transform(X)
@@ -72,32 +77,34 @@ def train_model(features, n_estimators, max_samples, ds, sa=False):
     model.fit(X_scaled, y)
     return (model, scaler)
 
-def get_test_data(features, ds, sa=False):
+def get_test_data(features, ds, n_months, sa=False):
     """
     Function to get the test set. We get the target and feature
     and apply a lag to the features for the forecasting.
     Input:
-        features: list of tuples (name of the feature, lag)
-        ds: datetime, we only keep data equal to ds + 1 month
-        sa: if True, remove seasonal component
+        features: list of tuples (name of the feature, lag).
+        ds: datetime. We only keep data equal to ds + 1 month.
+        n_months: integer. Number of months to keep in the dataset.
+        sa: boolean. If True, remove seasonal component.
     """
     ds_next = ds + relativedelta(months=1)
-    target = get_target(ds_next, sa)
-    df = get_features(features, ds_next, sa)
+    target = get_target(ds_next, n_months, sa)
+    df = get_features(features, ds_next, n_months, sa)
     df = pd.merge(target, df, on=['date'], how='inner')
     df = df.dropna()
     df = df.loc[df['date'] >= ds]
     return df
 
-def test_model(model, scaler, features, ds, sa=False):
+def test_model(model, scaler, features, ds, n_months, sa=False):
     """
-    Function to test the model
+    Function to test the model.
     Input:
-        features: list of tuples (name of the feature, lag)
-        ds: datetime, we only keep equal to ds + 1 month
-        sa: if True, remove seasonal component
+        features: list of tuples (name of the feature, lag).
+        ds: datetime. We only keep equal to ds + 1 month.
+        n_months: integer. Number of months to keep in the dataset.
+        sa: boolean. If True, remove seasonal component.
     """
-    data = get_test_data(features, ds, sa)
+    data = get_test_data(features, ds, n_months, sa)
     X = data.drop(columns=['date', 'target']).to_numpy()
     X_scaled = scaler.transform(X)
     y = data['target'].to_numpy()
