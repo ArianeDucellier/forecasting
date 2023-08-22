@@ -178,6 +178,7 @@ def test_model(model, name, lag, ds, n_months, sa=False):
     """
     Function to test the model.
     Input:
+        model: scikit-learn model for linear regression.
         name: string. Name of the feature.
         lag: integer. Lag (in months) to apply to the feature.
         ds: datetime. We only keep equal to ds + 1 month.
@@ -224,17 +225,17 @@ def backtest(name, lag, ds_begin, ds_end, n_months, sa=False):
 
 if __name__ == '__main__':
 
-    features = ['sales_raw']#,
-#                'inventory_raw',
-#                'new_listings_raw',
-#                'mean_days_to_pending_raw',
-#                'mean_sale_to_list_ratio_raw',
-#                'median_days_to_pending_raw',
-#                'median_sale_to_list_ratio_raw',
-#                'newly_pending_listings_raw',
-#                'pct_listings_price_cut_raw',
-#                'pct_sold_above_list_price_raw',
-#                'pct_sold_below_list_price_raw']
+    features = ['sales_raw',
+                'inventory_raw',
+                'new_listings_raw',
+                'mean_days_to_pending_raw',
+                'mean_sale_to_list_ratio_raw',
+                'median_days_to_pending_raw',
+                'median_sale_to_list_ratio_raw',
+                'newly_pending_listings_raw',
+                'pct_listings_price_cut_raw',
+                'pct_sold_above_list_price_raw',
+                'pct_sold_below_list_price_raw']
     ds_begin = datetime(2021, 7, 1)
     ds_end = datetime(2023, 5, 1)
     n_months = 36

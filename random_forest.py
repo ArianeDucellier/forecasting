@@ -4,8 +4,7 @@ import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from math import sqrt
-from sklearn.ensemble import BaggingRegressor
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, \
     mean_absolute_percentage_error, r2_score
 from sklearn.preprocessing import StandardScaler
@@ -74,8 +73,7 @@ def train_model(features, n_estimators, max_samples, ds, n_months, sa=False):
     scaler = StandardScaler().fit(X)
     X_scaled = scaler.transform(X)
     y = data['target'].to_numpy()
-    model = BaggingRegressor(base_estimator=LinearRegression(),
-        n_estimators=n_estimators,
+    model = RandomForestRegressor(n_estimators=n_estimators,
         max_samples=max_samples,
         max_features=len(features),
         oob_score=True,
@@ -195,7 +193,7 @@ if __name__ == '__main__':
                 'MAPE': [MAPE[i, j]], 'R2': [R2[i, j]]})
             errors.append(error)
     errors = pd.concat(errors)
-    errors.to_csv('ensemble_LR/errors_sa.csv')
+    errors.to_csv('random_forest/errors_sa.csv')
     # Predictions when keeping the seasonality
     features_nsa = [('sales_raw', 1),
                     ('inventory_raw', 2),
@@ -230,4 +228,4 @@ if __name__ == '__main__':
                 'MAPE': [MAPE[i, j]], 'R2': [R2[i, j]]})
             errors.append(error)
     errors = pd.concat(errors)
-    errors.to_csv('ensemble_LR/errors_nsa.csv')
+    errors.to_csv('random_forest/errors_nsa.csv')
