@@ -154,23 +154,23 @@ def backtest(features, n_estimators, max_samples, ds_begin, ds_end, n_months, sa
 
 if __name__ == '__main__':
 
-    ds_begin = datetime(2021, 7, 1)
-    ds_end = datetime(2023, 5, 1)
-    n_months = 36
+    ds_begin = datetime(2022, 7, 1)
+    ds_end = datetime(2024, 12, 1)
+    n_months = 48
     n_estimators = [10, 20, 50, 100, 200]
     max_samples = [0.5, 0.6, 0.7, 0.8, 0.9]
     # Predictions when removing the seasonality
-    features_sa = [('sales_raw', 1),
-                   ('inventory_raw', 1),
-                   ('new_listings_raw', 1),
-                   ('mean_days_to_pending_raw', 1),
-                   ('mean_sale_to_list_ratio_raw', 2),
-                   ('median_days_to_pending_raw', 1),
-                   ('median_sale_to_list_ratio_raw', 2),
-                   ('newly_pending_listings_raw', 1),
-                   ('pct_listings_price_cut_raw', 1),
-                   ('pct_sold_above_list_price_raw', 2),
-                   ('pct_sold_below_list_price_raw', 2)]
+    features_sa = [('Metro_sales_count_now_uc_sfrcondo_month', 1),
+                   ('Metro_invt_fs_uc_sfrcondo_month', 1),
+                   ('Metro_new_listings_uc_sfrcondo_month', 1),
+                   ('Metro_mean_doz_pending_uc_sfrcondo_month', 1),
+                   ('Metro_mean_sale_to_list_uc_sfrcondo_month', 2),
+                   ('Metro_med_doz_pending_uc_sfrcondo_month', 1),
+                   ('Metro_median_sale_to_list_uc_sfrcondo_month', 2),
+                   ('Metro_new_pending_uc_sfrcondo_month', 1),
+                   ('Metro_perc_listings_price_cut_uc_sfrcondo_month', 1),
+                   ('Metro_pct_sold_above_list_uc_sfrcondo_month', 2),
+                   ('Metro_pct_sold_below_list_uc_sfrcondo_month', 2)]
     MSE = np.zeros((5, 5))
     RMSE = np.zeros((5, 5))
     MAE = np.zeros((5, 5))
@@ -195,17 +195,17 @@ if __name__ == '__main__':
     errors = pd.concat(errors)
     errors.to_csv('random_forest/errors_sa.csv')
     # Predictions when keeping the seasonality
-    features_nsa = [('sales_raw', 1),
-                    ('inventory_raw', 2),
-                    ('new_listings_raw', 5),
-                    ('mean_days_to_pending_raw', 1),
-                    ('mean_sale_to_list_ratio_raw', 2),
-                    ('median_days_to_pending_raw', 1),
-                    ('median_sale_to_list_ratio_raw', 2),
-                    ('newly_pending_listings_raw', 1),
-                    ('pct_listings_price_cut_raw', 2),
-                    ('pct_sold_above_list_price_raw', 2),
-                    ('pct_sold_below_list_price_raw', 2)]
+    features_nsa = [('Metro_sales_count_now_uc_sfrcondo_month', 1),
+                   ('Metro_invt_fs_uc_sfrcondo_month', 1),
+                   ('Metro_new_listings_uc_sfrcondo_month', 1),
+                   ('Metro_mean_doz_pending_uc_sfrcondo_month', 1),
+                   ('Metro_mean_sale_to_list_uc_sfrcondo_month', 2),
+                   ('Metro_med_doz_pending_uc_sfrcondo_month', 1),
+                   ('Metro_median_sale_to_list_uc_sfrcondo_month', 2),
+                   ('Metro_new_pending_uc_sfrcondo_month', 1),
+                   ('Metro_perc_listings_price_cut_uc_sfrcondo_month', 1),
+                   ('Metro_pct_sold_above_list_uc_sfrcondo_month', 2),
+                   ('Metro_pct_sold_below_list_uc_sfrcondo_month', 2)]
     MSE = np.zeros((5, 5))
     RMSE = np.zeros((5, 5))
     MAE = np.zeros((5, 5))

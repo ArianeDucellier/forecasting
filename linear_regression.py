@@ -42,7 +42,7 @@ def get_target(ds, n_months, sa=False):
         target_growth: pandas dataframe.
     """
     # Read data and reformat dataframe
-    target = pd.read_csv('home_prices_raw.csv')
+    target = pd.read_csv('data/2025_02/Metro_zhvi_uc_sfrcondo_tier_0.33_0.67_month.csv')
     target = target.drop(columns=['RegionID', 'SizeRank', 'RegionType', 'StateName'])
     target = target.rename(columns={'RegionName':'index'})
     target = target.set_index('index')
@@ -86,7 +86,7 @@ def get_feature(name, ds, n_months, sa=False):
         feature: pandas dataframe.
     """
     # Read data and reformat dataframe
-    feature = pd.read_csv(name + '.csv')
+    feature = pd.read_csv('data/2025_02/' + name + '.csv')
     feature = feature.drop(columns=['RegionID', 'SizeRank', 'RegionType', 'StateName'])
     feature = feature.rename(columns={'RegionName':'index'})
     feature = feature.set_index('index')
@@ -100,7 +100,7 @@ def get_feature(name, ds, n_months, sa=False):
     feature = feature.sort_values(['date'])
     # Keep only the most recent data
     feature = feature.iloc[-n_months:]
-   # Keep only national value
+    # Keep only national value
     feature = feature[['date', 'United States']]
     feature = feature.rename(columns={'United States':name})
     if sa == False:
@@ -217,6 +217,7 @@ def backtest(name, lag, ds_begin, ds_end, n_months, sa=False):
     y = np.zeros(len(ds_range))
     y_hat = np.zeros(len(ds_range))
     for i, ds in enumerate(ds_range):
+        print('date:', ds)
         model = train_model(name, lag, ds, n_months, sa)
         result = test_model(model, name, lag, ds, n_months, sa)
         y[i] = result[0][0]
@@ -225,20 +226,20 @@ def backtest(name, lag, ds_begin, ds_end, n_months, sa=False):
 
 if __name__ == '__main__':
 
-    features = ['sales_raw',
-                'inventory_raw',
-                'new_listings_raw',
-                'mean_days_to_pending_raw',
-                'mean_sale_to_list_ratio_raw',
-                'median_days_to_pending_raw',
-                'median_sale_to_list_ratio_raw',
-                'newly_pending_listings_raw',
-                'pct_listings_price_cut_raw',
-                'pct_sold_above_list_price_raw',
-                'pct_sold_below_list_price_raw']
-    ds_begin = datetime(2021, 7, 1)
-    ds_end = datetime(2023, 5, 1)
-    n_months = 36
+    features = ['Metro_sales_count_now_uc_sfrcondo_month',
+                'Metro_invt_fs_uc_sfrcondo_month',
+                'Metro_new_listings_uc_sfrcondo_month',
+                'Metro_mean_doz_pending_uc_sfrcondo_month',
+                'Metro_mean_sale_to_list_uc_sfrcondo_month',
+                'Metro_med_doz_pending_uc_sfrcondo_month',
+                'Metro_median_sale_to_list_uc_sfrcondo_month',
+                'Metro_new_pending_uc_sfrcondo_month',
+                'Metro_perc_listings_price_cut_uc_sfrcondo_month',
+                'Metro_pct_sold_above_list_uc_sfrcondo_month',
+                'Metro_pct_sold_below_list_uc_sfrcondo_month']
+    ds_begin = datetime(2022, 7, 1)
+    ds_end = datetime(2024, 12, 1)
+    n_months = 48
     for feature in features:
         # Predictions when removing the seasonality
         MSE = np.zeros(6)
