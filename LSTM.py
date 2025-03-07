@@ -254,7 +254,6 @@ def backtest(features, hidden_units, num_layers, sequence_length, batch_size, le
     y = np.zeros(len(ds_range))
     y_hat = np.zeros(len(ds_range))
     for i, ds in enumerate(ds_range):
-        print(ds)
         df_train = get_train_data(features, ds, n_months, sa)
         df_test = get_test_data(features, ds, n_months, sa)
         (model, df_train, df_test, target_mean, target_stdev, avg_loss) = train_model(df_train, df_test, hidden_units, num_layers, sequence_length, batch_size, learning_rate, n_epochs, sa)
@@ -265,26 +264,26 @@ def backtest(features, hidden_units, num_layers, sequence_length, batch_size, le
 
 if __name__ == '__main__':
 
-    ds_begin = datetime(2021, 7, 1)
-    ds_end = datetime(2023, 5, 1)
-    n_months = 36
+    ds_begin = datetime(2022, 7, 1)
+    ds_end = datetime(2024, 12, 1)
+    n_months = 48
     hidden_units = [10, 12, 14]
     num_layers = [1, 2, 3]
     sequence_lengths = [12, 18, 24]
     batch_size = 4
     learning_rate = 5e-4
     n_epochs = 100
-    features = ['sales_raw',
-                'inventory_raw',
-                'new_listings_raw',
-                'mean_days_to_pending_raw',
-                'mean_sale_to_list_ratio_raw',
-                'median_days_to_pending_raw',
-                'median_sale_to_list_ratio_raw',
-                'newly_pending_listings_raw',
-                'pct_listings_price_cut_raw',
-                'pct_sold_above_list_price_raw',
-                'pct_sold_below_list_price_raw']
+    features = ['Metro_sales_count_now_uc_sfrcondo_month',
+                'Metro_invt_fs_uc_sfrcondo_month',
+                'Metro_new_listings_uc_sfrcondo_month',
+                'Metro_mean_doz_pending_uc_sfrcondo_month',
+                'Metro_mean_sale_to_list_uc_sfrcondo_month',
+                'Metro_med_doz_pending_uc_sfrcondo_month',
+                'Metro_median_sale_to_list_uc_sfrcondo_month',
+                'Metro_new_pending_uc_sfrcondo_month',
+                'Metro_perc_listings_price_cut_uc_sfrcondo_month',
+                'Metro_pct_sold_above_list_uc_sfrcondo_month',
+                'Metro_pct_sold_below_list_uc_sfrcondo_month']
     MSE = np.zeros((3, 3, 3))
     RMSE = np.zeros((3, 3, 3))
     MAE = np.zeros((3, 3, 3))
@@ -311,21 +310,21 @@ if __name__ == '__main__':
     errors = pd.concat(errors)
     errors.to_csv('LSTM/errors_sa.csv')
     # Predictions when keeping the seasonality
-#    for i, hidden_unit in enumerate(hidden_units):
-#        for j, num_layer in enumerate(num_layers):
-#            for k, sequence_length in enumerate(sequence_lengths):
-#                print('NSA', hidden_unit, num_layer, sequence_length)
-#                (y, y_hat) = backtest(features, hidden_unit, num_layer, sequence_length, batch_size, learning_rate, n_epochs, ds_begin, ds_end, n_months, sa=False)
-#                MSE[i, j, k] = mean_squared_error(y, y_hat)
-#                RMSE[i, j, k] = sqrt(mean_squared_error(y, y_hat))
-#                MAE[i, j, k] = mean_absolute_error(y, y_hat)
-#                MAPE[i, j, k] = mean_absolute_percentage_error(y, y_hat)
-#                R2[i, j, k] = r2_score(y, y_hat)
-#                error = pd.DataFrame({'hidden_units': [hidden_unit], \
-#                    'num_layers': [num_layer], 'sequence_lengths': [sequence_length], \
-#                    'MSE': [MSE[i, j, k]], 'RMSE': [RMSE[i, j, k]], \
-#                    'MAE': [MAE[i, j, k]], 'MAPE': [MAPE[i, j, k]], \
-#                    'R2': [R2[i, j, k]]})
-#                errors.append(error)
-#    errors = pd.concat(errors)
-#    errors.to_csv('LSTM/errors_nsa.csv')
+    for i, hidden_unit in enumerate(hidden_units):
+        for j, num_layer in enumerate(num_layers):
+            for k, sequence_length in enumerate(sequence_lengths):
+                print('NSA', hidden_unit, num_layer, sequence_length)
+                (y, y_hat) = backtest(features, hidden_unit, num_layer, sequence_length, batch_size, learning_rate, n_epochs, ds_begin, ds_end, n_months, sa=False)
+                MSE[i, j, k] = mean_squared_error(y, y_hat)
+                RMSE[i, j, k] = sqrt(mean_squared_error(y, y_hat))
+                MAE[i, j, k] = mean_absolute_error(y, y_hat)
+                MAPE[i, j, k] = mean_absolute_percentage_error(y, y_hat)
+                R2[i, j, k] = r2_score(y, y_hat)
+                error = pd.DataFrame({'hidden_units': [hidden_unit], \
+                    'num_layers': [num_layer], 'sequence_lengths': [sequence_length], \
+                    'MSE': [MSE[i, j, k]], 'RMSE': [RMSE[i, j, k]], \
+                    'MAE': [MAE[i, j, k]], 'MAPE': [MAPE[i, j, k]], \
+                    'R2': [R2[i, j, k]]})
+                errors.append(error)
+    errors = pd.concat(errors)
+    errors.to_csv('LSTM/errors_nsa.csv')

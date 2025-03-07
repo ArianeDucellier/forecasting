@@ -217,7 +217,6 @@ def backtest(name, lag, ds_begin, ds_end, n_months, sa=False):
     y = np.zeros(len(ds_range))
     y_hat = np.zeros(len(ds_range))
     for i, ds in enumerate(ds_range):
-        print('date:', ds)
         model = train_model(name, lag, ds, n_months, sa)
         result = test_model(model, name, lag, ds, n_months, sa)
         y[i] = result[0][0]
